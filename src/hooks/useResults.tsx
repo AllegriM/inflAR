@@ -4,6 +4,7 @@ export default function useResults(conversionData: ConversionProps, data: IPCPro
   const [infletaResults, setInfletaResults] = useState<infletaResults>({
     inflacion: 0,
     valor: 0,
+    error: false,
   });
 
   const fechaCompra = `${conversionData.añoCompra}-${conversionData.mesCompra}-01`;
@@ -11,8 +12,10 @@ export default function useResults(conversionData: ConversionProps, data: IPCPro
 
   useMemo(() => {
     const compraData = data?.find((item) => item.fecha === fechaCompra);
-
     const actualData = data?.find((item) => item.fecha === actualCompra);
+
+    if (new Date(fechaCompra) > new Date(actualCompra))
+      return setInfletaResults({inflacion: 0, valor: 0, error: true});
 
     if (actualData && compraData) {
       const inflacion = ((actualData?.IPC - compraData?.IPC) / compraData?.IPC) * 100;
@@ -21,16 +24,10 @@ export default function useResults(conversionData: ConversionProps, data: IPCPro
       setInfletaResults({
         inflacion,
         valor: VALOR_ACTUALIZADO,
+        error: false,
       });
     }
   }, [fechaCompra, actualCompra, conversionData, data]);
-
-  if (new Date(fechaCompra) > new Date(actualCompra)) {
-    return {
-      inflacion: 0,
-      valor: 0,
-    };
-  }
 
   return infletaResults;
 }

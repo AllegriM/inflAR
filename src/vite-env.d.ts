@@ -8,6 +8,7 @@ interface IPCProps {
 interface infletaResults {
   inflacion: number;
   valor: number;
+  error: boolean;
 }
 
 interface ConversionProps {
